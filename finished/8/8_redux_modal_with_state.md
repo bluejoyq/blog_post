@@ -1,4 +1,4 @@
-# [React Redux]] redux의 state와 Modal(1)
+# [React Redux] redux의 state와 Modal(1)
 ## 글을 쓰게된 이유
 제작 중인 프로젝트에서 Modal을 직접 제작하는 중이였다. 공통적으로 사용되는 Modal 배경을 전역에 만들어 놓고 Modal의 표시 여부와 내부 content를 `Redux State`로 만들어서 작동시키겠다는 생각이였다. 
 
@@ -76,5 +76,6 @@ Redux는 `plain serializable objects`(적절한 용어를 못찾음..)와 arrays
 고치는 과정은 다음에 쓰겠다.
 
 ## 참고 자료
-https://github.com/markerikson/react-redux-links/blob/master/redux-ui-management.md
-https://ko.redux.js.org/faq/organizing-state
+- https://github.com/markerikson/react-redux-links/blob/master/redux-ui-management.md
+- https://ko.redux.js.org/faq/organizing-state
+- https://velog.io/@altmshfkgudtjr/Redux%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-Modal-%EA%B5%AC%ED%98%84
