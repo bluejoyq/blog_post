@@ -55,7 +55,9 @@ content는 검색을 받는 컴포넌트였다. content에서 검색 버튼을 �
 
 [redux 상태 구성하기 - 공식문서](https://ko.redux.js.org/faq/organizing-state)
 
-그러면 안되는 것은 아니지만 Redux의 핵심 설계 중 하나인 state의 일관성(불변성?)이 깨지게 된다. 또한 대표적으로 `redux-devtools`를 이용한 `time travel debugging`을 사용할 수가 없게 된다. Redux를 사용해야할 이유가 적어지는 것이다.
+그러면 안되는 것은 아니지만 Redux의 핵심 설계 중 하나인 store안의 state의 지속성과 재수화(rehydration, 대체?)가 불가능해 `time travel debugging`을 사용할 수가 없게 된다(`redux-devtools`). Redux를 사용해야할 이유가 적어지는 것이다.
+
+[redux-persist 동작 원리 - rehydration에 대해 알려줌!](https://blog.bam.tech/developer-news/redux-persist-how-it-works-and-how-to-change-the-structure-of-your-persisted-store)
 
 ## 그렇다면 어떤 값이 state로?
 Redux는 `plain serializable objects`(적절한 용어를 못찾음..)와 arrays, 원시 값들을 store에 저장하기를 **매우 권장한다.**
