@@ -5,36 +5,67 @@
 문제는 content를 `React Element`를 Redux의 State로 직접 넣어서 구현을 한 것이다. 작동에는 문제가 없었지만 곧 문제가 생겼다. 문제가 생긴 코드는 아래 코드와 같은 구조였다. 
 [React Element와 Component 차이](https://sambalim.tistory.com/117)
 
-최상단 _app.js
+최상단 App.js
 ```jsx
-import Modal from '@components/modal';
-import wrapper from '@stores/index';
-const MyApp = (props)=> {
-	const { Component, pageProps } = props;
-	return (
-		<>
-		<Component {...pageProps} />
-		<Modal />
-		</>
-	);
+import React, {useState} from 'react';
+import {connect} from 'react-redux';
+import {show} from './store/reducers/modal';
+import Modal from './components/modal';
+const App = ({isVisible, show}) => {
+  return (
+    <>
+      <button onClick={()=>{show('search');}}>검색창 열기</button>
+      <Modal/>
+    </>
+  )
 }
-export default wrapper.withRedux(MyApp);
+const mapStateToProps = (state) => ({
+	isVisible: state.modal.isVisible
+});
+
+const mapDispatchToProps = (dispatch) => ({
+	show: (content) => dispatch(show({content})),
+});
+export default connect(mapStateToProps,mapDispatchToProps)(App);
 ```
 
 최상단에서 렌더링되는 modal.js
 ```jsx
+import React from 'react';
 import {connect} from 'react-redux';
-import {drop} from '@stores/reducers/modal';
-const Modal = ({isVisible, content, drop}) => { 
-	//isVisible : Redux State, content : Redux State, drop : Redux Action
+import {drop} from '../store/reducers/modal';
+import {useEffect} from 'react';
+import * as modals from './modals';
+import styles from './modal.module.css'
+const Modal = ({isVisible, content, drop}) => {
+	const checkEsc = (e) => {
+		if (e.code == 'Escape')
+			drop();
+	}
+	const Content = modals[content];
+	useEffect(()=>{
+		if(isVisible)
+		{
+			window.addEventListener('keydown', checkEsc);
+
+		}
+		else
+			window.removeEventListener('keydown',checkEsc);
+		return ()=>{window.removeEventListener('keydown',checkEsc)};
+	}, [isVisible])
+	
+
+
 	return (
-		isVisible &&
-		<div>
-			<div>
-				<button onClick={()=>{drop()}}>x</button>
+		<>
+		{isVisible &&
+		<div className={styles.modalContainer}>
+			<div className={styles.closeBar}>
+				<button onClick={drop}>XXXX</button>
 			</div>
-			{content}
-		</div>
+			<Content drop ={drop} />
+		</div>}
+		</>
 	);
 }
 
@@ -46,7 +77,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
 	drop: () => dispatch(drop()),
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(Modal);
 ```
 
