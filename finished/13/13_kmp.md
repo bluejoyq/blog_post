@@ -38,6 +38,7 @@ print(r)
 ### 그렇다면
 몇번째에서 틀렸는지를 가지고 다음에 탐색해야할 경우를 찾아놓는다면 빠르게 문자열 비교를 수행할 수 있다. 이 개념을 적용한 문자열 검색 알고리즘이 **KMP 알고리즘**이다.
 
+
 ## 부분 일치 테이블
 ![부분일치테이블 찾기](./2.png)
 - `N`이 i 번째까지 맞았을 경우 탐색을 시작할 다음 위치
@@ -77,7 +78,77 @@ def get_partial_match(N):
 ```
 단순히 모든 경우에 대해 비교함으로써 부분 일치 테이블을 만들 수 있다. `N`이 짧은 경우에는 상관 없지만 `N`이 길 경우에는 시간 복잡도가 `O(N^2)`이기에 비효율 적이다.
 
-### KMP를 적용한 코드
+추후 최적화를 적용하자.
+
+## KMP 알고리즘을 이용한 문자열 검색
+### 코드
+```python
+# H에서 N이 존재하는 시작 위치 모두 리턴
+def kmp_search(H,N):
+    J = len(H)
+    M = len(N)
+    # 부분 일치 테이블
+    pi = get_partial_match(N)
+    result = []
+
+    begin = 0
+    matched = 0
+    # H의 시작 위치가 J-M을 넘어가면 일치하는건 존재X
+    while begin < J -M:
+        # 같다면 matched의 길이 증가
+        if matched < M and H[begin + matched] == N[matched]:
+            matched += 1
+            if(matched == M):
+                result.append(begin)
+        # matched가 0이라면 pi를 이용해 갱신 X
+        elif matched == 0:
+            begin += 1
+        # begin + matched에서 일치에 실패했다면
+        # begin(시작 위치)를 다음 시작 위치로 만들기
+        # pi[matched - 1] == (matched - 1)만큼 일치할 때
+        # 다음 시작 위치는 matched - pi[matched - 1]이 된다.
+        # 다음 matched가 pi[matched -1] 되야하기 때문
+        else:
+            begin += matched - pi[matched - 1]
+            matched = pi[matched - 1]
+    return result
+
+```
+이 알고리즘은 항상 `begin`이나 `matched`가 1씩 증가하므로 총 `len(H) - len(N)`번 수행된다. 그리고 부분 일치 테이블을 만드는데에 `len(N)^2`의 시간이 걸리므로 그러므로 시간 복잡도는 `O(len(H) + len(N)^2)`이다. 
+
+부분 일치 테이블을 만드는데 시간이 너무 오래 걸리는데, KMP 알고리즘을 적용해 빠르게 개선이 가능하다. 접두사와 접미사가 같은 문자열의 최대 길이를 찾으면 된다. 즉 찾는 문자열 `N` 스스로에 대해서 KMP 알고리즘을 적용하면 된다.
+
+### KMP를 적용한 부분 일치 테이블 생성 코드
+``` python
+def better_get_partial_match(N):
+    M = len(N)
+    pi = [0] * M
+    
+    begin = 1
+    matched = 0
+    while begin + matched < M:
+        if N[begin + matched] == N[matched]:
+            matched += 1
+            # matched가 증가할때 이전의 값 갱신해줌
+            # 0일 경우에는 default이기에 갱신 X
+            pi[begin + matched - 1] = matched
+        elif matched == 0: 
+            begin += 1
+        else:
+            # 루프가 한번 더 돌면서 얘네에 대해서 
+            # 매칭 되는지 검증하고 pi를 갱신하니까
+            # 여기서는 pi값 갱신 X
+            begin += matched - pi[matched - 1]
+            matched = pi[matched - 1]
+    return pi
+```
+최적화된 부분 일치 테이블 생성의 시간 복잡도는 `O(len(N))`이다.
+부분 일치 테이블 생성마저 최적화한다면 KMP 알고리즘을 이용한 문자열 검색의 최종적인 시간 복잡도는 `O(len(H) + len(N))`이다.
+
+
+
+
+## 최종 코드 
 ``` python
 def better_get_partial_match(N):
     M = len(N)
@@ -89,11 +160,35 @@ def better_get_partial_match(N):
         if N[begin + matched] == N[matched]:
             matched += 1
             pi[begin + matched - 1] = matched
-        elif matched == 0:
+        elif matched == 0: 
             begin += 1
         else:
             begin += matched - pi[matched - 1]
             matched = pi[matched - 1]
     return pi
+
+def kmp_search(H,N):
+    J = len(H)
+    M = len(N)
+    pi = better_get_partial_match(N)
+    result = []
+
+    begin = 0
+    matched = 0
+    while begin < J - M:
+        if matched < M and H[begin + matched] == N[matched]:
+            matched += 1
+            if(matched == M):
+                result.append(begin)
+        elif matched == 0:
+            begin += 1
+        else:
+            begin += matched - pi[matched - 1]
+            matched = pi[matched - 1]
+    return result
 ```
 
+## 코멘트
+KMP는 배워도 배워도 자꾸 까먹는다. 얄궂다 정말.
+
+틀린점이 있다면 꼭 지적해주세요. 제가 잘 모르고 있을 확률 99%.
