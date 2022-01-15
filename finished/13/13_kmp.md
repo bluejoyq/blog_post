@@ -38,14 +38,62 @@ print(r)
 ### 그렇다면
 몇번째에서 틀렸는지를 가지고 다음에 탐색해야할 경우를 찾아놓는다면 빠르게 문자열 비교를 수행할 수 있다. 이 개념을 적용한 문자열 검색 알고리즘이 **KMP 알고리즘**이다.
 
-### 부분 일치 테이블
-![부분일치테이블 찾기](2.png)
-- N이 i 번째에서 틀렸을 경우 탐색을 시작할 다음 위치
+## 부분 일치 테이블
+![부분일치테이블 찾기](./2.png)
+- `N`이 i 번째까지 맞았을 경우 탐색을 시작할 다음 위치
   
 |i|탐색을 재개할 N의 다음 위치|
-|---|---|
+|---|---:|
 |0|0|
-|2|0|
-|3|내용 10|
-|4|내용 10|
-|5|내용 10|
+|1|0|
+|2|1|
+|3|2|
+|4|0|
+|5|1|
+|6|2|
+|7|0|
+i번째까지 일치했을 때 다음 시작할 위치를 담고 있는 이 테이블을 **부분 일치 테이블**이라고 한다. (일치가 실패했을 때 어떻게 해야하는지 말해준다는 의미에서 **실패 함수**라고 부르기도 한다.)
+
+다음 시작 위치가 되기 위해서는 `N[:i+1]`까지의 시작 부분과 끝 부분이 일치해야햔다. 즉 접두사와 접미사가 같을 때의 최대 길이가 된다.
+
+부분 일치 테이블을 `pi`라고 두면,
+
+```
+pi[i] = N[:i+1]의 접두사이자 접미사인 문자열의 최대 길이
+```
+로 정의할 수 있다. 그렇다면 이 부분 일치 테이블은 어떻게 만들까?
+
+### 단순한 코드
+```python
+def get_partial_match(N):
+    M = len(N)
+    pi = [0] * M
+    for begin in range(1,M):
+        for f_len in range(M - begin):
+            if N[begin + f_len] != N[f_len]: # begin + f_len == i
+                break
+            pi[begin + f_len] = max(pi[begin + f_len], f_len+ 1)
+    return pi
+```
+단순히 모든 경우에 대해 비교함으로써 부분 일치 테이블을 만들 수 있다. `N`이 짧은 경우에는 상관 없지만 `N`이 길 경우에는 시간 복잡도가 `O(N^2)`이기에 비효율 적이다.
+
+### KMP를 적용한 코드
+``` python
+def better_get_partial_match(N):
+    M = len(N)
+    pi = [0] * M
+    
+    begin = 1
+    matched = 0
+    while begin + matched < M:
+        if N[begin + matched] == N[matched]:
+            matched += 1
+            pi[begin + matched - 1] = matched
+        elif matched == 0:
+            begin += 1
+        else:
+            begin += matched - pi[matched - 1]
+            matched = pi[matched - 1]
+    return pi
+```
+
