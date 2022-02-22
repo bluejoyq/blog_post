@@ -5,11 +5,11 @@
 
 내 프로그램은 (현재로써는) 로그인 과정을 사용자에게 맡기는데, 그 과정에서 구글 연동 로그인을 위해 구글 로그인을 시도하면 
 
-![login실패](17-1.png)
+![로그인 실패](https://images.velog.io/images/bluejoy32/post/fdc575e7-151c-4057-a1ff-2f104cfec278/17-1.png)
 
 이란 오류가 뜨게 된다.
 
-구글 자체에서 소프트웨어 자동화로 통제되는 브라우저에서의 로그인을 차단하는 것이다.
+찾아보니 구글 자체에서 소프트웨어 자동화로 통제되는 브라우저에서의 로그인을 차단한다고 한다.
 
 나는 구글 로그인이 필요했기에 우회해보기로 했다.
 
@@ -37,15 +37,32 @@ https://github.com/ultrafunkamsterdam/undetected-chromedriver
 사용법도 엄청 간단하다
 
 ```python
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import undetected_chromedriver as uc
 
+
+
+def init_driver():
+    driver = uc.Chrome()
+    driver.get('https://velog.io')
+    return driver
+# 로그인 버튼을 눌러주고 로그인이 되서 다시 velog로 돌아올때까지 60초를 기다린다.
+def do_login(driver):
+    driver.find_element(By.XPATH,'//button[text()="로그인"]').click()
+    WebDriverWait(driver, 60).until(
+        EC.presence_of_element_located(
+            (By.XPATH, '//button[text()="새 글 작성"]')
+        )
+    )
 # main에서 실행하지 않으면 오류가 남
 # https://github.com/ultrafunkamsterdam/undetected-chromedriver/issues/486#issuecomment-1032009193 참조
 if  __name__  ==  "__main__" :
-    driver = uc.Chrome()
-    driver.get('https://velog.io')
-
+    driver = init_driver()
+    do_login(driver)
     # 당신의 코드를 아래에 적으세요.
 ```
 
 이렇게만 사용하면 구글 로그인이 된다.
+> 2/22 예제 코드가 너무 단순해서 조금 추가했습니다.
