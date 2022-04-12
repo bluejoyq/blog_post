@@ -9,7 +9,7 @@
 ```
 ## 발생 이유
 > Implemented: additional references for Next.js projects, providing a resolution to js files in Link, form & other tags, relatively to "pages" directory. Since now we have proper references "unused" warning was gone. Renaming, moving files and code completion are also supported.
-> 
+
 인텔리제이 자체의 오류이다. 최신 버전으로 업데이트 후 캐쉬를 지우면 해결!
 ## 참조 링크
 https://youtrack.jetbrains.com/issue/WEB-48593
