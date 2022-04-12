@@ -1,0 +1,19 @@
+{
+  "name": "blog_post",
+  "version": "1.0.0",
+  "description": "제 블로그에 올라가는 글 원문입니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluejoyq/blog_post.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bluejoyq/blog_post/issues"
+  },
+  "homepage": "https://github.com/bluejoyq/blog_post#readme"
+}
