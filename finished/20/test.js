@@ -1,8 +1,18 @@
-const axios = require('axios');
-const URL = 'localhost:3000';
 
-axios.get(`${URL}/api/hello`).then((res)=>{
-  console.log(res);
-});
+const asyncWork = () => {
+  return new Promise((resolve, reject) => {
+    doSomeWorkCanFail((res,err)=> {
+      if(res){
+        resolve(res);
+      }
+      else{
+        reject(err);
+      }
+    });
+  });
+};
 
-console.log("A");
+asyncWork()
+  .then(sucessCallback)
+  .catch(failureCallback)
+  .finally(cleanUpWork)
